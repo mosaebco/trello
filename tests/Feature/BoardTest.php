@@ -175,4 +175,16 @@ class BoardTest extends TestCase
             'title' => $board->title,
         ]);
     }
+
+    public function test_user_cannot_delete_other_users_boards()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $board = Board::factory()->for($user1)->create();
+        $this->be($user2);
+
+        $response = $this->deleteJson(route('board.destroy', $board));
+
+        $response->assertForbidden();
+    }
 }

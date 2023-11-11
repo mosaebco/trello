@@ -39,8 +39,13 @@ class BoardController extends Controller
         return $board;
     }
 
-    public function destroy(Board $board)
+    public function destroy(Board $board, Request $request)
     {
+        if($board->user_id !== $request->user()->id)
+        {
+            abort(403);
+        }
+        
         $board->delete();
     }
 }
