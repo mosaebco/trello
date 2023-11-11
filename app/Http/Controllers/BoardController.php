@@ -38,4 +38,9 @@ class BoardController extends Controller
         
         return $board;
     }
+
+    public function destroy(Board $board)
+    {
+        $board->delete();
+    }
 }

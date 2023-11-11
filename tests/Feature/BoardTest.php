@@ -161,4 +161,18 @@ class BoardTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_users_can_delete_boards()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->deleteJson(route('board.destroy', $board));
+
+        $response->assertOk();
+        $this->assertDatabaseMissing('boards', [
+            'title' => $board->title,
+        ]);
+    }
 }
