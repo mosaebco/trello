@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Board;
 use Illuminate\Http\Request;
+
 
 class BoardController extends Controller
 {
@@ -13,5 +15,10 @@ class BoardController extends Controller
         ]);
 
         return $request->user()->boards()->create($validated);
+    }
+
+    public function show(Board $board)
+    {
+        return $board;
     }
 }

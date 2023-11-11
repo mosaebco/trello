@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Board;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -71,5 +72,33 @@ class BoardTest extends TestCase
         ]);
 
         $respons->assertJsonValidationErrorFor('title');
+    }
+
+
+    public function test_board_title_must_be_more_than_3_character()
+    {
+        $user = User::factory()->create();
+        $this->be($user);
+
+        $response = $this->postJson('board', [
+            'title' => 'st',
+        ]);
+
+        $response->assertJsonValidationErrorFor('title');
+    }
+
+    public function test_user_can_see_their_own_board()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->getJson('board/' . $board->id);
+
+        $response->assertOk();
+        $response->assertExactJson([
+            'title' => $board->title,
+            'description' => $board->description,
+        ]);
     }
 }
