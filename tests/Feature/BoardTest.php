@@ -138,6 +138,13 @@ class BoardTest extends TestCase
 
     public function test_guest_cannot_update_boards()
     {
-        //
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        
+        $response = $this->patchJson('board/'.$board->id,[
+            'title' => 'new title',
+        ]);
+
+        $response->assertUnauthorized();
     }
 }
