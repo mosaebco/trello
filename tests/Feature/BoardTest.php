@@ -51,11 +51,11 @@ class BoardTest extends TestCase
         $this->be($user);
 
 
-        $respons = $this->postJson('board', [
+        $response = $this->postJson('board', [
             'title' => 'My board',
         ]);
 
-        $respons->assertCreated();
+        $response->assertCreated();
         $this->assertDatabaseHas('boards', [
             'title' => 'My board',
         ]);
@@ -67,11 +67,11 @@ class BoardTest extends TestCase
         $user = User::factory()->create();
         $this->be($user);
 
-        $respons = $this->postJson('board', [
+        $response = $this->postJson('board', [
             'description' => 'something in my board',
         ]);
 
-        $respons->assertJsonValidationErrorFor('title');
+        $response->assertJsonValidationErrorFor('title');
     }
 
 
@@ -100,5 +100,44 @@ class BoardTest extends TestCase
             'title' => $board->title,
             'description' => $board->description,
         ]);
+    }
+
+    public function test_user_can_update_their_own_boards()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->patchJson('board/'.$board->id, [
+            'title' => 'new title',
+        ]);
+
+        $response->assertOk();
+        $response->assertExactJson([
+            'title' => 'new title',
+            'description' => $board->description,
+        ]);
+
+        $this->assertDatabaseHas('boards', [
+            'title' => 'new title',
+        ]);
+    }
+
+    public function test_board_update_must_be_validated()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->patchJson('board/'.$board->id, [
+            'title' => 'N',
+        ]);
+
+        $response->assertJsonValidationErrorFor('title');
+    }
+
+    public function test_guest_cannot_update_boards()
+    {
+        //
     }
 }
