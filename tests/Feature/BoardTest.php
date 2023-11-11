@@ -147,4 +147,18 @@ class BoardTest extends TestCase
 
         $response->assertUnauthorized();
     }
+
+    public function test_users_cannot_update_other_users_boards()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $board = Board::factory()->for($user1)->create();
+        $this->be($user2);
+
+        $response = $this->patchJson('board/'.$board->id, [
+            'title' => 'new title',
+        ]);
+
+        $response->assertForbidden();
+    }
 }
