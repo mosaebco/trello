@@ -10,10 +10,12 @@ use Tests\TestCase;
 
 class CardTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_user_can_create_a_card()
     {
         $user = User::factory()->create();
-        $board = Board::factoty()->for($user)->create();
+        $board = Board::factory()->for($user)->create();
         $this->be($user);
 
         $response = $this->postJson("board/{$board->id}/card", [
