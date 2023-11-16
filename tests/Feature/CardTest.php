@@ -28,4 +28,31 @@ class CardTest extends TestCase
             'board_id' => $board->id,
         ]);
     }
+
+    public function test_user_cannot_create_boards_on_other_users_boards()
+    {
+        $user1 = User::factory()->create();
+        $user2 = User::factory()->create();
+        $board = Board::factory()->for($user2)->create();
+        $this->be($user1);
+
+        $response = $this->postJson("board/{$board->id}/card", [
+            'title' => 'random title',
+        ]);
+
+        $response->assertForbidden();
+    }
+
+    public function test_title_is_required_for_creating_a_card()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->postJson("board/{$board->id}/card", [
+            'title' => ''
+        ]);
+
+        $response->assertJsonValidationErrorFor('title');
+    }
 }

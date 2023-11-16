@@ -10,8 +10,15 @@ class CardController extends Controller
 {
     public function store(Request $request, Board $board)
     {
-        return $board->cards()->create([
-            'title' => $request->title,
+        if($board->user_id !== $request->user()->id)
+        {
+            abort('403');
+        }
+
+        $validated = $request->validate([
+            'title' => 'required'
         ]);
+
+        return $board->cards()->create($validated);
     }
 }
