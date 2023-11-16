@@ -16,7 +16,7 @@ class CardController extends Controller
         }
 
         $validated = $request->validate([
-            'title' => 'required'
+            'title' => 'required|min:3'
         ]);
 
         return $board->cards()->create($validated);

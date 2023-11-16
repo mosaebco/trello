@@ -55,4 +55,31 @@ class CardTest extends TestCase
 
         $response->assertJsonValidationErrorFor('title');
     }
+
+    public function test_guest_cannot_creat_card()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+
+        $response = $this->postJson("board/{$board->id}/card", [
+            'title' => 'random title',
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_card_title_cannot_be_less_than_three_characters()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $this->be($user);
+
+        $response = $this->postJson("board/{$board->id}/card", [
+            'title' => 'n'
+        ]);
+
+        $response->assertJsonValidationErrorFor('title');
+    }
+
+    
 }
