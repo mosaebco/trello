@@ -86,6 +86,20 @@ class CardTest extends TestCase
     {
         $user = User::factory()->create();
         $board = Board::factory()->for($user)->create();
+
+        $card1 = Card::factory()->for($board)->create();
+        $card2 = Card::factory()->for($board)->create();
+        $card3 = Card::factory()->for($board)->create();
+
+        $this->assertEquals(1, $card1->order_column);
+        $this->assertEquals(2, $card2->order_column);
+        $this->assertEquals(3, $card3->order_column);
+    }
+
+    public function test_user_can_order_their_cards()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
         $card1 = Card::factory()->for($board)->create();
         $card2 = Card::factory()->for($board)->create();
         $card3 = Card::factory()->for($board)->create();
@@ -95,5 +109,23 @@ class CardTest extends TestCase
         $this->assertEquals(1, $card2->fresh()->order_column);
         $this->assertEquals(2, $card3->fresh()->order_column);
         $this->assertEquals(3, $card1->fresh()->order_column);
+    }
+
+    public function test_each_board_has_its_own_card_order()
+    {
+        $user = User::factory()->create();
+        $board1 = Board::factory()->for($user)->create();
+        $board2 = Board::factory()->for($user)->create();
+        $card1 = Card::factory()->for($board1)->create();
+        $card2 = Card::factory()->for($board1)->create();
+        $card3 = Card::factory()->for($board2)->create();
+        $card4 = Card::factory()->for($board2)->create();
+
+        Card::setNewOrder([4, 3]);
+
+        $this->assertEquals(1, $card1->fresh()->order_column);
+        $this->assertEquals(2, $card2->fresh()->order_column);
+        $this->assertEquals(1, $card4->fresh()->order_column);
+        $this->assertEquals(2, $card3->fresh()->order_column);
     }
 }
