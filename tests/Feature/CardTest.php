@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Board;
+use App\Models\Card;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -81,5 +82,18 @@ class CardTest extends TestCase
         $response->assertJsonValidationErrorFor('title');
     }
 
-    
+    public function test_new_card_will_be_orderd()
+    {
+        $user = User::factory()->create();
+        $board = Board::factory()->for($user)->create();
+        $card1 = Card::factory()->for($board)->create();
+        $card2 = Card::factory()->for($board)->create();
+        $card3 = Card::factory()->for($board)->create();
+
+        Card::setNewOrder([2, 3, 1]);
+
+        $this->assertEquals(1, $card2->fresh()->order_column);
+        $this->assertEquals(2, $card3->fresh()->order_column);
+        $this->assertEquals(3, $card1->fresh()->order_column);
+    }
 }
