@@ -87,13 +87,28 @@ class CardTest extends TestCase
         $user = User::factory()->create();
         $board = Board::factory()->for($user)->create();
 
-        $card1 = Card::factory()->for($board)->create();
-        $card2 = Card::factory()->for($board)->create();
-        $card3 = Card::factory()->for($board)->create();
-
-        $this->assertEquals(1, $card1->order_column);
-        $this->assertEquals(2, $card2->order_column);
-        $this->assertEquals(3, $card3->order_column);
+        $response1 = $this->postJson("board/{$board->id}/card/reorder", [
+            'title' => 'something1',
+        ]);
+        $response2 = $this->postJson("board/{$board->id}/card/reorder", [
+            'title' => 'something2',
+        ]);
+        $response3 = $this->postJson("board/{$board->id}/card/reorder", [
+            'title' => 'something3',
+        ]);
+        
+        $response1->assertDatabaseHas('cards', [
+            'title' => 'something1',
+            'order_column' => 1,
+        ]);
+        $response2->assertDatabaseHas('cards', [
+            'title' => 'something2',
+            'order_column' => 2,
+        ]);
+        $response3->assertDatabaseHas('cards', [
+            'title' => 'something3',
+            'order_column' => 3,
+        ]);
     }
 
     public function test_user_can_order_their_cards()
