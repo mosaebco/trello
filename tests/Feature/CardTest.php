@@ -82,31 +82,26 @@ class CardTest extends TestCase
         $response->assertJsonValidationErrorFor('title');
     }
 
-    public function test_new_card_will_be_orderd()
+    public function test_new_cards_will_be_orderd()
     {
         $user = User::factory()->create();
         $board = Board::factory()->for($user)->create();
 
-        $response1 = $this->postJson("board/{$board->id}/card/reorder", [
-            'title' => 'something1',
-        ]);
-        $response2 = $this->postJson("board/{$board->id}/card/reorder", [
-            'title' => 'something2',
-        ]);
-        $response3 = $this->postJson("board/{$board->id}/card/reorder", [
-            'title' => 'something3',
-        ]);
+        $card1 = Card::factory()->for($board)->create();
+        $card2 = Card::factory()->for($board)->create();
+        $card3 = Card::factory()->for($board)->create();
         
-        $response1->assertDatabaseHas('cards', [
-            'title' => 'something1',
+
+        $this->assertDatabaseHas('cards', [
+            'title' => $card1->title,
             'order_column' => 1,
         ]);
-        $response2->assertDatabaseHas('cards', [
-            'title' => 'something2',
+        $this->assertDatabaseHas('cards', [
+            'title' => $card2->title,
             'order_column' => 2,
         ]);
-        $response3->assertDatabaseHas('cards', [
-            'title' => 'something3',
+        $this->assertDatabaseHas('cards', [
+            'title' => $card3->title,
             'order_column' => 3,
         ]);
     }
