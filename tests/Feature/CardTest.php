@@ -114,8 +114,14 @@ class CardTest extends TestCase
         $card2 = Card::factory()->for($board)->create();
         $card3 = Card::factory()->for($board)->create();
 
-        Card::setNewOrder([2, 3, 1]);
+        // Card::setNewOrder([2, 3, 1]);
+        $response = $this->postJson("board/{$board->id}/card/reorder", [
+            2,
+            3,
+            1,
+        ]);
 
+        $response->assertOk();
         $this->assertEquals(1, $card2->fresh()->order_column);
         $this->assertEquals(2, $card3->fresh()->order_column);
         $this->assertEquals(3, $card1->fresh()->order_column);

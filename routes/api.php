@@ -12,5 +12,6 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('board', BoardController::class);
     Route::apiResource('board.card', CardController::class);
+    // Route::post("board/{board}/card/reorder", CardController::class, 'reorder')->name('card.reorder');
 });
 

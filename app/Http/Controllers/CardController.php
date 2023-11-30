@@ -21,4 +21,9 @@ class CardController extends Controller
 
         return $board->cards()->create($validated);
     }
+
+    public function reorder(Board $board)
+    {
+        //
+    }
 }
